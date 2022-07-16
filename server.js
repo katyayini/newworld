@@ -61,7 +61,7 @@ const question2 = [
     }
 ];
 
-const question3 = [
+const question3=[
     {
         type: 'input',
         name: 'fname',
@@ -75,7 +75,8 @@ const question3 = [
     {
         type: 'input',
         name: 'erole',
-        message: 'Enter employee\'s role: '
+        message: 'Enter employee\'s role: ',
+        
     },
     {
         type: 'input',
@@ -151,29 +152,34 @@ async function addRole() {
 
 
 async function addEmployee() {
+
     const answer = await inquirer.prompt(question3);
 
     db.query('SELECT * FROM role', function (err, results) {
         for (i = 0; i < results.length; i++) {
             if(results[i].title===answer.erole)
 
-            {db.query('SELECT * FROM employee', function (err, results2) {
-               
-                         for (j=0; j < results2.length; j++) {
-                         
-                         if (answer.emanager === (results2[j].first_name +" "+ results2[j].last_name))
-                        { 
-                            db.query(`INSERT INTO employee (first_name,last_name,role_id,manager_id) VALUES (?,?,?,?)`,[answer.fname,answer.lname,results[i].id,results2[j].id], function () {
-                                console.log(`${answer.fname} ${answer.lname} added`);
-                            });
-                        }
-                
+             {  db.query(`INSERT INTO employee (first_name, last_name, role_id) VALUES (?,?,?)`, [answer.fname,answer.lname,results[i].id], function() {
+                                    console.log(`${answer.fname} ${answer.lname} added`);
+                                 } )
+            }
+        
+        
+        }
+        
+    
+    });
 
+    db.query('SELECT * FROM employee', function (err, res) {
+        for (i = 0; i < res.length; i++) {
+            if((res[i].first_name+" "+res[i].last_name)===answer.emanager)
 
-            }});
-             } 
-       
-}});}
+             {  db.query(`UPDATE employee SET manager_id = ? WHERE first_name= ? and last_name = ?`,[res[i].id, answer.fname, answer.lname], function() {
+                                    console.log(`${answer.fname} ${answer.lname} added`);
+                                 } )
+            }}}); 
+
+}
 
 
 
