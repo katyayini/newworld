@@ -104,6 +104,7 @@ const question4 = [
 
 async function viewDepartments() {
     db.query('SELECT * FROM department', function (err, results) {
+        console.log("\n");
         console.table(results);
     })
 
@@ -112,6 +113,7 @@ async function viewDepartments() {
 
 async function viewRoles() {
     db.query('SELECT * FROM role', function (err, results) {
+        console.log("\n");
         console.table(results);
     })
 
@@ -119,6 +121,7 @@ async function viewRoles() {
 
 async function viewEmployees() {
     db.query('SELECT * FROM employee', function (err, results) {
+        console.log("\n");
         console.table(results);
     });
 
@@ -174,7 +177,8 @@ async function addEmployee() {
         for (i = 0; i < res.length; i++) {
             if((res[i].first_name+" "+res[i].last_name)===answer.emanager)
 
-             {  db.query(`UPDATE employee SET manager_id = ? WHERE first_name= ? and last_name = ?`,[res[i].id, answer.fname, answer.lname], function() {
+             {  
+                db.query(`UPDATE employee SET manager_id = ? WHERE first_name= ? and last_name = ?`,[res[i].id, answer.fname, answer.lname], function() {
                                     console.log(`${answer.fname} ${answer.lname} added`);
                                  } )
             }}}); 
@@ -187,37 +191,22 @@ async function addEmployee() {
 
 async function updateEmployeeRole() {
     const answer = await inquirer.prompt(question4);
-    let roleID, empID;
-    db.query('SELECT * FROM role', function (err, results) {
-        for (i = 0; i < results.length; i++) {
-            if (answer.newrole === results[i].title)
-           {
-            db.query('SELECT * FROM employee', function (err, results2) {
 
-                for (j = 0; j < results2.length; j++) {
-                    if (answer.name === (results2[j].first_name + " " + results2[j].last_name))
-                    {
-                        db.query(`UPDATE employee SET role_id = ${results[i].id} where id= ${results2[j].id}`, function () {
-                        console.log(`Role updated to ${answer.newrole}`);
-                    });
-                   }
-                
-                }
+    db.query(`Select id from role WHERE title=?`,[answer.newrole], function (err,res) {
+        var fullname= answer.name;
+        var arr=fullname.split(" ");
+       db.query('UPDATE employee SET role_id = ? WHERE first_name= ? and last_name = ?',[res[0].id, arr[0], arr[1]], function () {
+       console.log("updated"); 
+        });
         
-            });
-           
-        
-        
-           }
-        }
-
-    });
-
-    
-
-    
+    })
 
 }
+
+    
+      
+                                  
+           
 
 
 async function promptUser() {
