@@ -35,7 +35,7 @@ const questions = [ //Array of questions presented to user
 ];
 
 
-const question1 = [
+const question1 = [ //array of questions for adding department
     {
         type: 'input',
         name: 'deptName',
@@ -43,7 +43,7 @@ const question1 = [
     }
 ];
 
-const question2 = [
+const question2 = [ //array of questions for adding role
     {
         type: 'input',
         name: 'title',
@@ -61,7 +61,7 @@ const question2 = [
     }
 ];
 
-const question3=[
+const question3 = [ //array of questions for adding employee
     {
         type: 'input',
         name: 'fname',
@@ -76,7 +76,7 @@ const question3=[
         type: 'input',
         name: 'erole',
         message: 'Enter employee\'s role: ',
-        
+
     },
     {
         type: 'input',
@@ -86,7 +86,7 @@ const question3=[
 ];
 
 
-const question4 = [
+const question4 = [ //array of questions for updating employee role
     {
         type: 'input',
         name: 'name',
@@ -102,7 +102,7 @@ const question4 = [
 
 
 
-async function viewDepartments() {
+async function viewDepartments() { // function to view all departments
     db.query('SELECT * FROM department', function (err, results) {
         console.log("\n");
         console.table(results);
@@ -111,7 +111,7 @@ async function viewDepartments() {
 }
 
 
-async function viewRoles() {
+async function viewRoles() { // function to view all roles
     db.query('SELECT * FROM role', function (err, results) {
         console.log("\n");
         console.table(results);
@@ -119,7 +119,7 @@ async function viewRoles() {
 
 }
 
-async function viewEmployees() {
+async function viewEmployees() { // function to view all employees
     db.query('SELECT * FROM employee', function (err, results) {
         console.log("\n");
         console.table(results);
@@ -128,7 +128,7 @@ async function viewEmployees() {
 }
 
 
-async function addDepartment() {
+async function addDepartment() { //function to add a department
     const answer = await inquirer.prompt(question1);
     db.query(`INSERT INTO department (name)
    VALUES (?)`, answer.deptName, function () {
@@ -137,7 +137,7 @@ async function addDepartment() {
 
 }
 
-async function addRole() {
+async function addRole() { //function to add a role
     const answer = await inquirer.prompt(question2);
 
     db.query("SELECT id, name FROM department", function (err, results) {
@@ -154,34 +154,33 @@ async function addRole() {
 }
 
 
-async function addEmployee() {
+async function addEmployee() { //function to add an employee
 
     const answer = await inquirer.prompt(question3);
 
     db.query('SELECT * FROM role', function (err, results) {
         for (i = 0; i < results.length; i++) {
-            if(results[i].title===answer.erole)
-
-             {  db.query(`INSERT INTO employee (first_name, last_name, role_id) VALUES (?,?,?)`, [answer.fname,answer.lname,results[i].id], function() {
-                                    console.log(`${answer.fname} ${answer.lname} added`);
-                                 } )
+            if (results[i].title === answer.erole) {
+                db.query(`INSERT INTO employee (first_name, last_name, role_id) VALUES (?,?,?)`, [answer.fname, answer.lname, results[i].id], function () {
+                    console.log(`${answer.fname} ${answer.lname} added`);
+                })
             }
-        
-        
+
+
         }
-        
-    
+
+
     });
 
     db.query('SELECT * FROM employee', function (err, res) {
         for (i = 0; i < res.length; i++) {
-            if((res[i].first_name+" "+res[i].last_name)===answer.emanager)
-
-             {  
-                db.query(`UPDATE employee SET manager_id = ? WHERE first_name= ? and last_name = ?`,[res[i].id, answer.fname, answer.lname], function() {
-                                    console.log(`${answer.fname} ${answer.lname} added`);
-                                 } )
-            }}}); 
+            if ((res[i].first_name + " " + res[i].last_name) === answer.emanager) {
+                db.query(`UPDATE employee SET manager_id = ? WHERE first_name= ? and last_name = ?`, [res[i].id, answer.fname, answer.lname], function () {
+                    console.log(`${answer.fname} ${answer.lname} added`);
+                })
+            }
+        }
+    });
 
 }
 
@@ -189,24 +188,24 @@ async function addEmployee() {
 
 
 
-async function updateEmployeeRole() {
+async function updateEmployeeRole() {//function to update an employee's role
     const answer = await inquirer.prompt(question4);
 
-    db.query(`Select id from role WHERE title=?`,[answer.newrole], function (err,res) {
-        var fullname= answer.name;
-        var arr=fullname.split(" ");
-       db.query('UPDATE employee SET role_id = ? WHERE first_name= ? and last_name = ?',[res[0].id, arr[0], arr[1]], function () {
-       console.log("updated"); 
+    db.query(`Select id from role WHERE title=?`, [answer.newrole], function (err, res) {
+        var fullname = answer.name;
+        var arr = fullname.split(" ");
+        db.query('UPDATE employee SET role_id = ? WHERE first_name= ? and last_name = ?', [res[0].id, arr[0], arr[1]], function () {
+            console.log("updated");
         });
-        
+
     })
 
 }
 
-    
-      
-                                  
-           
+
+
+
+
 
 
 async function promptUser() {
@@ -216,13 +215,9 @@ async function promptUser() {
 
         if (data.choice === 'View all departments') { await viewDepartments(); }
 
-
         else if (data.choice === 'View all roles') { await viewRoles(); }
 
-
-
         else if (data.choice === 'View all employees') { await viewEmployees(); }
-
 
         else if (data.choice === 'Add a department') { await addDepartment(); }
 
