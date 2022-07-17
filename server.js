@@ -112,15 +112,15 @@ async function viewDepartments() { // function to view all departments
 
 
 async function viewRoles() { // function to view all roles
-    db.query('SELECT * FROM role', function (err, results) {
+    db.query('SELECT role.id, role.title, department.name as department, role.salary FROM role INNER JOIN department ON role.department_id=department.id', function (err, results) {
         console.log("\n");
         console.table(results);
     })
 
 }
 
-async function viewEmployees() { // function to view all employees
-    db.query('SELECT * FROM employee', function (err, results) {
+async function viewEmployees() { // function to view all employees 
+    db.query('SELECT e.id, e.first_name, e.last_name, role.title, role.salary, department.name as department, CONCAT (m.first_name," ",m.last_name) as manager FROM employee e LEFT JOIN role on role.id=e.role_id LEFT JOIN department on role.department_id=department.id LEFT JOIN employee m ON e.manager_id=m.id', function (err, results) {
         console.log("\n");
         console.table(results);
     });
@@ -201,9 +201,6 @@ async function updateEmployeeRole() {//function to update an employee's role
     })
 
 }
-
-
-
 
 
 
